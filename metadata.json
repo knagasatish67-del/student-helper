@@ -1,0 +1,6 @@
+{
+  "name": "Student Helper - University Student Service Platform",
+  "description": "University student assignment, lab manual record, and xerox printing platform with offline collection and live agent tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
