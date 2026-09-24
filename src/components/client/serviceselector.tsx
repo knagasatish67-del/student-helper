@@ -41,7 +41,9 @@ export function ServiceSelector({ activeService }: ServiceSelectorProps = {}) {
         const Icon = s.icon;
         const isActive = activeService
           ? activeService.toLowerCase().includes(s.id)
-          : pathname.includes(s.id);
+          : pathname
+            ? pathname.includes(s.id)
+            : false;
         return (
           <Link
             key={s.id}

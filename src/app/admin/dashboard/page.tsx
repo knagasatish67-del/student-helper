@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetchData();
-    const timer = setInterval(fetchData, 5000);
+    const timer = setInterval(fetchData, 10000);
     return () => clearInterval(timer);
   }, []);
 

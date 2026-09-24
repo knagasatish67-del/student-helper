@@ -5,6 +5,6 @@ export async function GET() {
   return NextResponse.json({
     shop: memoryDb.settings,
     totalOrders: memoryDb.orders.size,
-    totalUsers: memoryDb.users.size,
+    totalUsers: memoryDb.getAllUsers().length,
   });
 }

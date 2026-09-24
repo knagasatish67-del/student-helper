@@ -6,7 +6,7 @@ import { Navbar } from '@/components/client/navbar';
 import { Footer } from '@/components/client/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { CheckCircle2, ArrowRight, ArrowLeft, Printer, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Printer, ShieldCheck } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { OrderConfirmedModal } from '@/components/client/orderconfirmedmodal';
 
@@ -26,7 +26,7 @@ export default function OrderConfirmPage() {
     if (saved) {
       try {
         setDraft(JSON.parse(saved));
-      } catch (e) {}
+      } catch {}
     }
   }, []);
 
@@ -137,6 +137,7 @@ export default function OrderConfirmPage() {
           orderId={confirmedOrder.orderId}
           serviceType={draft?.serviceType || 'Print Service'}
           totalAmount={confirmedOrder.totalAmount}
+          onClose={() => setConfirmedOrder(null)}
         />
       )}
     </div>

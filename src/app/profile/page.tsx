@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/client/navbar';
 import { Footer } from '@/components/client/footer';
 import { useAuth } from '@/components/providers/authprovider';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, BookOpen, School, Save, Check } from 'lucide-react';
+import { User, Save, Check } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export default function ProfilePage() {

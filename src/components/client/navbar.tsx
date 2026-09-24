@@ -40,7 +40,7 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname ? pathname === link.href : false;
             return (
               <Link
                 key={link.name}
@@ -106,7 +106,7 @@ export function Navbar() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                  pathname === link.href
+                  pathname && pathname === link.href
                     ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'
                     : 'text-zinc-600 dark:text-zinc-400'
                 }`}

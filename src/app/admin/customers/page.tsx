@@ -18,7 +18,16 @@ export default function AdminCustomersPage() {
       setLoading(true);
       const res = await fetch('/api/admin/customers');
       const data = await res.json();
-      if (data.customers) setCustomers(data.customers);
+      if (data.customers) {
+        const seen = new Set<string>();
+        const unique = data.customers.filter((c: User) => {
+          const key = c.id || c.email;
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        setCustomers(unique);
+      }
     } catch (e) {
       console.error(e);
     } finally {

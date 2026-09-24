@@ -8,10 +8,10 @@ export function useChat(orderId?: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchMessages = useCallback(async () => {
+  const fetchMessages = useCallback(async (isInitial = false) => {
     if (!orderId) return;
     try {
-      setIsLoading(true);
+      if (isInitial) setIsLoading(true);
       const res = await fetch(`/api/chat/${orderId}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
@@ -22,13 +22,13 @@ export function useChat(orderId?: string) {
     } catch (e) {
       console.error('Failed to load chat messages', e);
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsLoading(false);
     }
   }, [orderId, token]);
 
   useEffect(() => {
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 3000);
+    fetchMessages(true);
+    const interval = setInterval(() => fetchMessages(false), 4000);
     return () => clearInterval(interval);
   }, [fetchMessages]);
 

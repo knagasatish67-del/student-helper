@@ -5,7 +5,7 @@ import { useChat } from '@/hooks/usechat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, MessageSquare, User, Package, Check } from 'lucide-react';
+import { Send, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function ChatPanel({ orders }: { orders: Order[] }) {
@@ -65,12 +65,12 @@ export function ChatPanel({ orders }: { orders: Order[] }) {
         </div>
         <ScrollArea className="flex-1">
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-            {orders.map((order) => {
+            {orders.map((order, idx) => {
               const isSelected = order.id === activeId;
               const studentName = order.customerName || order.user?.name || 'Student';
               return (
                 <button
-                  key={order.id}
+                  key={order.id ? `${order.id}-${idx}` : `chat-order-${idx}`}
                   onClick={() => setSelectedOrderId(order.id)}
                   className={`w-full text-left p-3.5 transition-colors flex items-start justify-between gap-2 ${
                     isSelected
@@ -127,11 +127,11 @@ export function ChatPanel({ orders }: { orders: Order[] }) {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {messages.map((m) => {
+                  {messages.map((m, idx) => {
                     const isAdmin = m.senderRole === 'ADMIN';
                     return (
                       <div
-                        key={m.id}
+                        key={m.id ? `${m.id}-${idx}` : `msg-${idx}`}
                         className={`flex flex-col ${isAdmin ? 'items-end' : 'items-start'}`}
                       >
                         <span className="text-[10px] text-zinc-400 mb-0.5 px-1 font-semibold">

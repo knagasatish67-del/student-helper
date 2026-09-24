@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, X, Send, PhoneCall, ShieldCheck, Clock } from 'lucide-react';
+import { MessageSquare, X, Send, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -18,8 +18,8 @@ export function FloatingChat() {
   ]);
   const [inputVal, setInputVal] = useState('');
 
-  // Don't render inside admin portal
-  if (pathname.startsWith('/admin')) {
+  // Don't render inside admin portal or if pathname is not available
+  if (!pathname || pathname.startsWith('/admin')) {
     return null;
   }
 

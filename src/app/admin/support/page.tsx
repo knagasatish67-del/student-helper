@@ -25,7 +25,7 @@ export default function AdminSupportPage() {
 
   useEffect(() => {
     loadOrders();
-    const timer = setInterval(loadOrders, 4000);
+    const timer = setInterval(loadOrders, 10000);
     return () => clearInterval(timer);
   }, []);
 

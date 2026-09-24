@@ -4,7 +4,7 @@ import { Order, OrderStatus } from '@/types';
 import { useAuth } from '@/components/providers/authprovider';
 
 export function useOrders() {
-  const { token, user } = useAuth();
+  const { token, user, isLoading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,8 +32,10 @@ export function useOrders() {
   }, [token, user?.role]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (!authLoading) {
+      fetchOrders();
+    }
+  }, [authLoading, fetchOrders]);
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {

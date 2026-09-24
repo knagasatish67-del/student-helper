@@ -6,13 +6,11 @@ import { Footer } from '@/components/client/footer';
 import { useOrders } from '@/hooks/useorders';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Printer,
   ShoppingBag,
   Eye,
-  ArrowRight,
-  Clock,
   Plus,
   Truck,
   Banknote,

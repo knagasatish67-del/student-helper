@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { User } from '@/types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'student-helper-dev-secret-key-12345';
 

@@ -27,7 +27,8 @@ export async function POST(request: Request) {
       name: userRecord.name,
     });
 
-    const { passwordHash: _, ...safeUser } = userRecord;
+    const safeUser = { ...userRecord };
+    delete (safeUser as any).passwordHash;
     return NextResponse.json({ user: safeUser, token });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });

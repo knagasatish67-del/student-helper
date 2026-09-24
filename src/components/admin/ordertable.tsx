@@ -5,7 +5,7 @@ import { Order, OrderStatus } from '@/types';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Clock, Printer, FileText, CheckCircle2 } from 'lucide-react';
+import { Eye, Printer, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 
 export interface OrderTableProps {
@@ -92,8 +92,8 @@ export function OrderTable({ orders, onStatusChange, isLoading }: OrderTableProp
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order) => (
-            <TableRow key={order.id}>
+          {orders.map((order, idx) => (
+            <TableRow key={order.id ? `${order.id}-${idx}` : `ord-${idx}`}>
               <TableCell className="font-semibold text-xs font-mono text-zinc-900 dark:text-zinc-100">
                 {order.orderNumber}
               </TableCell>

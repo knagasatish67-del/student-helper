@@ -20,8 +20,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
-  const { passwordHash, ...user } = userRecord;
-  return NextResponse.json({ user });
+  const safeUser = { ...userRecord };
+  delete (safeUser as any).passwordHash;
+  return NextResponse.json({ user: safeUser });
 }
 
 export async function POST(request: Request) {
@@ -63,8 +64,9 @@ export async function POST(request: Request) {
         name: newUser.name,
       });
 
-      const { passwordHash: _, ...safeUser } = newUser;
-      return NextResponse.json({ user: safeUser, token });
+      const registeredUser = { ...newUser };
+      delete (registeredUser as any).passwordHash;
+      return NextResponse.json({ user: registeredUser, token });
     }
 
     // Default: login
@@ -89,8 +91,9 @@ export async function POST(request: Request) {
       name: userRecord.name,
     });
 
-    const { passwordHash: _, ...safeUser } = userRecord;
-    return NextResponse.json({ user: safeUser, token });
+    const loggedInUser = { ...userRecord };
+    delete (loggedInUser as any).passwordHash;
+    return NextResponse.json({ user: loggedInUser, token });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Auth server error' }, { status: 500 });
   }

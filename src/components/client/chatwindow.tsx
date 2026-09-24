@@ -5,7 +5,7 @@ import { useAuth } from '@/components/providers/authprovider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, MessageSquare, Shield, User as UserIcon } from 'lucide-react';
+import { Send, MessageSquare, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 
 export interface ChatWindowProps {
@@ -57,13 +57,13 @@ export function ChatWindow({ orderId, orderNumber }: ChatWindowProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {messages.map((msg) => {
+            {messages.map((msg, idx) => {
               const isMine = msg.senderId === user?.id;
               const isAdmin = msg.senderRole === 'ADMIN';
 
               return (
                 <div
-                  key={msg.id}
+                  key={msg.id ? `${msg.id}-${idx}` : `msg-${idx}`}
                   className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                 >
                   <div className="flex items-center gap-1.5 mb-1 px-1">

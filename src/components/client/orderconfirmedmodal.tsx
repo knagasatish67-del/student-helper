@@ -1,10 +1,10 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ArrowRight, Banknote, ShieldCheck } from 'lucide-react';
+import { Check, ArrowRight, Banknote, ShieldCheck, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface OrderConfirmedModalProps {
+export interface OrderConfirmedModalProps {
   isOpen: boolean;
   orderNumber: string;
   orderId?: string;
@@ -20,10 +20,12 @@ export function OrderConfirmedModal({
   orderId,
   serviceType,
   totalAmount,
+  onClose,
   redirectUrl,
 }: OrderConfirmedModalProps) {
   const router = useRouter();
   const [countdown, setCountdown] = useState(3);
+  const [isCancelled, setIsCancelled] = useState(false);
 
   const targetUrl =
     redirectUrl ||
@@ -31,25 +33,47 @@ export function OrderConfirmedModal({
       serviceType
     )}&amount=${totalAmount}`;
 
-  useEffect(() => {
-    if (!isOpen) return;
+  const navigateToReceipt = React.useCallback(() => {
+    try {
+      router.push(targetUrl);
+    } catch {
+      window.location.href = targetUrl;
+    }
+  }, [router, targetUrl]);
 
-    setCountdown(3);
+  // Reset cancellation when modal is reopened
+  useEffect(() => {
+    if (isOpen) {
+      setIsCancelled(false);
+      setCountdown(3);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || isCancelled) return;
+
     const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          router.push(targetUrl);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [isOpen, router, targetUrl]);
+    const timeout = setTimeout(() => {
+      navigateToReceipt();
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [isOpen, isCancelled, navigateToReceipt]);
 
   if (!isOpen) return null;
+
+  const handleCancel = () => {
+    setIsCancelled(true);
+    if (onClose) {
+      onClose();
+    }
+  };
 
   return (
     <div
@@ -60,6 +84,17 @@ export function OrderConfirmedModal({
         id="order-confirmed-modal-content"
         className="relative w-full max-w-md rounded-2xl bg-white p-6 sm:p-8 text-center shadow-2xl border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 animate-in zoom-in-95 duration-200"
       >
+        {/* Close / Cancel Button */}
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="absolute top-4 right-4 rounded-lg p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:text-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+          title="Cancel auto-redirect"
+          aria-label="Close modal"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
         {/* Animated Green Circle with Tick Checkmark */}
         <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 ring-8 ring-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 dark:ring-emerald-950/40">
           <svg
@@ -117,20 +152,40 @@ export function OrderConfirmedModal({
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Buttons */}
         <div className="mt-6 flex flex-col gap-2">
           <Button
             id="view-receipt-button"
-            onClick={() => router.push(targetUrl)}
+            onClick={navigateToReceipt}
             className="w-full h-11 font-semibold text-sm gap-2 shadow-lg shadow-emerald-600/20 bg-emerald-600 hover:bg-emerald-700 text-white"
           >
-            <span>View Order Summary ({countdown}s)</span>
+            <span>
+              {isCancelled
+                ? 'View Order Summary'
+                : `View Order Summary (${countdown}s)`}
+            </span>
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <div className="flex items-center justify-center gap-1 text-[11px] text-zinc-400">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-            <span>Redirecting to your receipt automatically...</span>
-          </div>
+
+          {isCancelled ? (
+            <div className="text-[11px] text-zinc-400">
+              Auto-redirect paused. Click above to view your receipt anytime.
+            </div>
+          ) : (
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center gap-1 text-[11px] text-zinc-400">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Redirecting automatically...</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="text-[11px] font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline"
+              >
+                Cancel redirect
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

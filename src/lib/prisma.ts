@@ -40,6 +40,16 @@ class MemoryDatabase {
     acceptingOrders: true,
   };
 
+  getAllUsers(): (User & { passwordHash: string })[] {
+    const unique = new Map<string, User & { passwordHash: string }>();
+    for (const u of this.users.values()) {
+      if (u && u.id) {
+        unique.set(u.id, u);
+      }
+    }
+    return Array.from(unique.values());
+  }
+
   private initialized = false;
 
   constructor() {

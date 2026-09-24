@@ -19,17 +19,6 @@ export interface CustomerDetailsSectionProps {
   serviceType: 'XEROX' | 'ASSIGNMENT' | 'MANUAL';
 }
 
-const COMMON_HOSTELS = [
-  'Hostel 1 (Godavari)',
-  'Hostel 2 (Krishna)',
-  'Hostel 3 (Ganga)',
-  'Hostel 4 (Kaveri)',
-  'Girls Hostel A (Saraswati)',
-  'Girls Hostel B (Yamuna)',
-  'PG & Research Scholar Hostel',
-  'Off-Campus Private Hostel / Room',
-];
-
 export function CustomerDetailsSection({
   details,
   onChange,
@@ -141,17 +130,16 @@ export function CustomerDetailsSection({
             <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
               Hostel / Residence <span className="text-rose-500">*</span>
             </label>
-            <select
-              value={details.hostel}
-              onChange={(e) => updateField('hostel', e.target.value)}
-              className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 shadow-xs focus:border-indigo-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
-            >
-              {COMMON_HOSTELS.map((h) => (
-                <option key={h} value={h}>
-                  {h}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <Building className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+              <Input
+                placeholder="Enter your hostel or residence name"
+                value={details.hostel}
+                onChange={(e) => updateField('hostel', e.target.value)}
+                className="pl-9 text-xs"
+                required
+              />
+            </div>
           </div>
 
           <div>

@@ -7,8 +7,8 @@ import { Home, Printer, FileEdit, BookOpen, User } from 'lucide-react';
 export function BottomNav() {
   const pathname = usePathname();
 
-  // Don't display in admin routes
-  if (pathname.startsWith('/admin')) {
+  // Don't display in admin routes or if pathname is not available
+  if (!pathname || pathname.startsWith('/admin')) {
     return null;
   }
 

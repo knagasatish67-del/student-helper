@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/authprovider';
-import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
   Package,
@@ -82,7 +81,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            const isActive = pathname
+              ? pathname === item.href || pathname.startsWith(item.href + '/')
+              : false;
             return (
               <Link
                 key={item.href}

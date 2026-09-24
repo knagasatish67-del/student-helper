@@ -3,7 +3,7 @@ import React from 'react';
 import { UploadedFile } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Download, ExternalLink, Printer } from 'lucide-react';
+import { FileText, Download, Printer } from 'lucide-react';
 
 export function FileDownload({ files }: { files: UploadedFile[] }) {
   const formatFileSize = (bytes: number) => {

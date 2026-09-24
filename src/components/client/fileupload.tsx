@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { UploadedFile } from '@/types';
 import { Button } from '@/components/ui/button';
-import { UploadCloud, File, Trash2, Plus, CheckCircle2, Layers } from 'lucide-react';
+import { UploadCloud, Trash2, Plus, Layers } from 'lucide-react';
 
 export interface FileUploadProps {
   files: UploadedFile[];
@@ -15,7 +15,6 @@ export function FileUpload({
   files,
   onFilesChange,
   accept = '.pdf,.doc,.docx,.ppt,.pptx,.jpg,.png',
-  maxFiles = 100, // Unlimited support per PRD
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

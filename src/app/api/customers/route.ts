@@ -3,9 +3,14 @@ import { memoryDb } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const customers = Array.from(memoryDb.users.values())
+    const customers = memoryDb
+      .getAllUsers()
       .filter((u) => u.role === 'STUDENT')
-      .map(({ passwordHash, ...safeUser }) => safeUser);
+      .map((u) => {
+        const copy = { ...u };
+        delete (copy as any).passwordHash;
+        return copy;
+      });
 
     return NextResponse.json({ customers });
   } catch (err: any) {

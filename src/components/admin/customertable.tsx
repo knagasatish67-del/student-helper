@@ -2,7 +2,6 @@
 import React from 'react';
 import { User } from '@/types';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 
@@ -18,7 +17,21 @@ export function CustomerTable({ customers }: { customers: User[] }) {
     }
   };
 
-  if (!customers || customers.length === 0) {
+  // Deduplicate customers by ID as an extra safeguard against duplicate rendering keys
+  const uniqueCustomers = React.useMemo(() => {
+    const seen = new Set<string>();
+    const list: User[] = [];
+    for (const c of customers || []) {
+      const key = c.id || c.email;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        list.push(c);
+      }
+    }
+    return list;
+  }, [customers]);
+
+  if (!uniqueCustomers || uniqueCustomers.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 p-8 text-center text-sm text-zinc-400">
         No students found.
@@ -40,8 +53,8 @@ export function CustomerTable({ customers }: { customers: User[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {customers.map((c) => (
-            <TableRow key={c.id}>
+          {uniqueCustomers.map((c, idx) => (
+            <TableRow key={c.id ? `${c.id}-${idx}` : `student-${idx}`}>
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Avatar name={c.name || 'Student'} className="h-8 w-8 text-xs" />

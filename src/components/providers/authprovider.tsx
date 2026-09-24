@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('sh_token');
         localStorage.removeItem('sh_user');
       }
@@ -108,8 +108,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('sh_user');
   };
 
+  const value = React.useMemo(
+    () => ({ user, token, isLoading, login, register, logout, setUser }),
+    [user, token, isLoading]
+  );
+
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, setUser }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

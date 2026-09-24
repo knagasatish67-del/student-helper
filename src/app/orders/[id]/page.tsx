@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/client/navbar';
 import { Footer } from '@/components/client/footer';
@@ -8,9 +8,8 @@ import { ChatWindow } from '@/components/client/chatwindow';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Order, OrderStatus } from '@/types';
+import { Order } from '@/types';
 import {
-  Printer,
   FileText,
   ArrowLeft,
   Download,
@@ -18,10 +17,7 @@ import {
   Truck,
   User,
   Phone,
-  Home,
   Banknote,
-  MapPin,
-  Clock,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
@@ -34,7 +30,8 @@ export default function OrderTrackingPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
+    if (!id) return;
     try {
       const res = await fetch(`/api/orders/${id}`);
       const data = await res.json();
@@ -46,13 +43,14 @@ export default function OrderTrackingPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchOrder();
-    const interval = setInterval(fetchOrder, 4000);
+    if (order?.status === 'COMPLETED' || order?.status === 'CANCELLED') return;
+    const interval = setInterval(fetchOrder, 6000);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [fetchOrder, order?.status]);
 
   const handleCancelOrder = async () => {
     if (!order) return;

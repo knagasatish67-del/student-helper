@@ -4,7 +4,7 @@ import { AdminStats } from '@/types';
 
 export async function GET() {
   const orders = Array.from(memoryDb.orders.values());
-  const users = Array.from(memoryDb.users.values()).filter((u) => u.role === 'STUDENT');
+  const users = memoryDb.getAllUsers().filter((u) => u.role === 'STUDENT');
 
   const pending = orders.filter(
     (o) =>

@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/client/navbar';
 import { Footer } from '@/components/client/footer';
 import { ServiceSelector } from '@/components/client/serviceselector';
@@ -16,7 +15,6 @@ import { useAuth } from '@/components/providers/authprovider';
 import { OrderConfirmedModal } from '@/components/client/orderconfirmedmodal';
 
 export default function ManualOrderPage() {
-  const router = useRouter();
   const { user } = useAuth();
   const [confirmedOrder, setConfirmedOrder] = useState<{
     isOpen: boolean;
@@ -55,9 +53,9 @@ export default function ManualOrderPage() {
   const [customer, setCustomer] = useState<CustomerDetails>({
     name: user?.name || 'Alex Sharma',
     phone: user?.phone || '+91 91234 56789',
-    hostel: user?.hostel || 'Hostel 3 (Ganga)',
-    roomNumber: user?.roomNumber || 'Room 204',
-    deliveryAddress: 'Ganga Block B, 2nd Floor',
+    hostel: user?.hostel || '',
+    roomNumber: user?.roomNumber || '',
+    deliveryAddress: '',
     deliveryOption: 'HOSTEL',
   });
 
@@ -529,6 +527,7 @@ export default function ManualOrderPage() {
           orderId={confirmedOrder.orderId}
           serviceType="Lab Manual"
           totalAmount={confirmedOrder.totalAmount}
+          onClose={() => setConfirmedOrder(null)}
         />
       )}
     </div>

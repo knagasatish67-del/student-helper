@@ -14,9 +14,7 @@ import {
   BookOpen,
   ShoppingBag,
   Clock,
-  ArrowRight,
   TrendingUp,
-  User,
 } from 'lucide-react';
 import { format } from 'date-fns';
 

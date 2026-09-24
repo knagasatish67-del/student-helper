@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/client/navbar';
 import { Footer } from '@/components/client/footer';
@@ -9,20 +9,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Order, OrderStatus } from '@/types';
+import { Order } from '@/types';
 import {
   Search,
   Truck,
   Phone,
   User,
-  MapPin,
-  Clock,
   Banknote,
-  CheckCircle2,
   AlertCircle,
-  Package,
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 function TrackOrderContent() {
   const searchParams = useSearchParams();
@@ -31,7 +26,6 @@ function TrackOrderContent() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
@@ -45,13 +39,12 @@ function TrackOrderContent() {
       .catch(() => {});
   }, []);
 
-  const handleSearch = async (queryToSearch?: string) => {
+  const handleSearch = useCallback(async (queryToSearch?: string) => {
     const q = (queryToSearch ?? searchQuery).trim();
     if (!q) return;
 
     setLoading(true);
     setError(null);
-    setSearched(true);
 
     try {
       const res = await fetch(`/api/orders/${encodeURIComponent(q)}`);
@@ -68,13 +61,13 @@ function TrackOrderContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchQuery]);
 
   useEffect(() => {
     if (initialQuery) {
       handleSearch(initialQuery);
     }
-  }, [initialQuery]);
+  }, [initialQuery, handleSearch]);
 
   return (
     <div className="mx-auto max-w-5xl py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
