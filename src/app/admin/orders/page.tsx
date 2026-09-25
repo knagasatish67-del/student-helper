@@ -5,7 +5,7 @@ import { OrderTable } from '@/components/admin/ordertable';
 import { Order, OrderStatus } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, RefreshCw, Download } from 'lucide-react';
+import { Search, RefreshCw, Download } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export default function AdminOrdersPage() {

@@ -10,21 +10,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    const emailKey = email.toLowerCase().trim();
-    const userRecord = memoryDb.users.get(emailKey);
-    if (!userRecord || userRecord.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Admin account not found or access denied' }, { status: 401 });
+    const userRecord = memoryDb.users.get(email.toLowerCase().trim());
+    if (!userRecord || userRecord.role !== 'STAFF') {
+      return NextResponse.json(
+        { error: 'Staff account not found or access unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    if (userRecord.isActive === false) {
+      return NextResponse.json(
+        { error: 'This staff account has been deactivated. Please contact campus admin.' },
+        { status: 403 }
+      );
     }
 
     const isValid = await comparePassword(password, userRecord.passwordHash);
     if (!isValid) {
-      return NextResponse.json({ error: 'Invalid admin credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid staff credentials' }, { status: 401 });
     }
 
     const token = signToken({
       userId: userRecord.id,
       email: userRecord.email,
-      role: 'ADMIN',
+      role: 'STAFF',
+      staffRole: userRecord.staffRole,
       name: userRecord.name,
     });
 

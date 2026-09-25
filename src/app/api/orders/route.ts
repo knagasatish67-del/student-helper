@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
     const authHeader = request.headers.get('authorization');
     const token = extractTokenFromHeader(authHeader);
-    let userId = 'usr-student-01'; // Default student
+    let userId = body.userId || (customerPhone ? `usr-${customerPhone.replace(/\D/g, '')}` : `usr-guest-${Date.now()}`);
     let user = memoryDb.users.get(userId);
 
     if (token) {
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const orderCount = memoryDb.orders.size + 125;
+    const orderCount = memoryDb.orders.size + 1;
     const orderNumber = `UNI-${orderCount.toString().padStart(6, '0')}`;
     const orderId = `ord-${Date.now()}`;
 
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     const welcomeMsg = {
       id: `msg-${Date.now()}`,
       orderId: newOrder.id,
-      senderId: 'usr-admin-01',
+      senderId: 'campus-desk-admin',
       senderRole: 'ADMIN' as const,
       senderName: 'Campus Service Coordinator',
       content: `Hello ${newOrder.customerName}! Your order ${newOrder.orderNumber} for ${serviceType.toLowerCase()} has been accepted. Our service agent will deliver to ${newOrder.hostel}, ${newOrder.roomNumber}. Direct payment of ₹${newOrder.totalAmount.toFixed(2)} can be paid upon handover.`,

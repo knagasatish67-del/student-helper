@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Menu,
   X,
+  UserCheck,
 } from 'lucide-react';
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Orders Queue', href: '/admin/orders', icon: Package },
     { label: 'Students Directory', href: '/admin/customers', icon: Users },
+    { label: 'Staff Team', href: '/admin/staff', icon: UserCheck },
     { label: 'Pricing Engine', href: '/admin/pricing', icon: DollarSign },
     { label: 'Business Reports', href: '/admin/reports', icon: BarChart3 },
     { label: 'Live Support Desk', href: '/admin/support', icon: Headphones },

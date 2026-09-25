@@ -4,7 +4,7 @@ import { AdminLayout } from '@/components/admin/adminlayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Settings, Save, Check } from 'lucide-react';
+import { Settings, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export default function AdminSettingsPage() {

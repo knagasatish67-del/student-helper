@@ -25,7 +25,7 @@ export default function AdminReportsPage() {
             Business Reports & Analytics
           </h2>
           <p className="text-xs text-zinc-500 mt-1">
-            Revenue breakdowns, service popularity, paper consumption, and fulfillment statistics.
+            {loading ? 'Refreshing report data...' : 'Revenue breakdowns, service popularity, paper consumption, and fulfillment statistics.'}
           </p>
         </div>
 

@@ -50,6 +50,28 @@ class MemoryDatabase {
     return Array.from(unique.values());
   }
 
+  getStaffUsers(): (User & { passwordHash: string })[] {
+    return this.getAllUsers().filter((u) => u.role === 'STAFF');
+  }
+
+  getAdminUsers(): (User & { passwordHash: string })[] {
+    return this.getAllUsers().filter((u) => u.role === 'ADMIN');
+  }
+
+  hasAdminUser(): boolean {
+    return this.getAdminUsers().length > 0;
+  }
+
+  addAdminUser(admin: User & { passwordHash: string }) {
+    this.users.set(admin.id, admin);
+    this.users.set(admin.email.toLowerCase(), admin);
+  }
+
+  addStaffUser(staff: User & { passwordHash: string }) {
+    this.users.set(staff.id, staff);
+    this.users.set(staff.email.toLowerCase(), staff);
+  }
+
   private initialized = false;
 
   constructor() {
@@ -60,210 +82,44 @@ class MemoryDatabase {
     if (this.initialized) return;
     this.initialized = true;
 
-    // Seed default admin
-    const adminHash = bcrypt.hashSync('admin123', 10);
-    const adminUser: User & { passwordHash: string } = {
-      id: 'usr-admin-01',
-      name: 'Campus Print Admin',
-      email: 'admin@studenthelper.com',
+    // Master Administrator Account (K.Nagasatish)
+    const masterAdminHash = bcrypt.hashSync('Nayana67$', 10);
+    const masterAdmin: User & { passwordHash: string } = {
+      id: 'usr-admin-master',
+      name: 'K.Nagasatish',
+      email: 'knagasatish@gmail.com',
       role: 'ADMIN',
-      phone: '+91 98765 43210',
-      college: 'University Tech Campus',
-      department: 'Admin Services',
+      phone: '7330798667',
+      college: 'Campus Administration',
+      department: 'Central Print Operations',
       createdAt: new Date().toISOString(),
-      passwordHash: adminHash,
+      passwordHash: masterAdminHash,
     };
-    this.users.set(adminUser.id, adminUser);
-    this.users.set(adminUser.email, adminUser);
+    this.users.set(masterAdmin.id, masterAdmin);
+    this.users.set(masterAdmin.email.toLowerCase(), masterAdmin);
 
-    // Seed default students (both college.edu and university.edu aliases)
-    const studentHash = bcrypt.hashSync('student123', 10);
-    const studentUser: User & { passwordHash: string } = {
-      id: 'usr-student-01',
-      name: 'Alex Sharma',
-      email: 'student@college.edu',
-      role: 'STUDENT',
-      phone: '+91 91234 56789',
-      college: 'College of Engineering & Technology',
-      rollNumber: '21CS108',
-      department: 'Computer Science & Engineering',
-      semester: '6th Semester',
-      createdAt: new Date().toISOString(),
-      passwordHash: studentHash,
+    // Support both knagasatish@gmail.com and knagasatish67@gmail.com
+    const masterAdminAlias: User & { passwordHash: string } = {
+      ...masterAdmin,
+      id: 'usr-admin-master-alias',
+      email: 'knagasatish67@gmail.com',
     };
-    this.users.set(studentUser.id, studentUser);
-    this.users.set(studentUser.email.toLowerCase(), studentUser);
+    this.users.set(masterAdminAlias.id, masterAdminAlias);
+    this.users.set(masterAdminAlias.email.toLowerCase(), masterAdminAlias);
 
-    const studentUserAlias: User & { passwordHash: string } = {
-      ...studentUser,
-      id: 'usr-student-02',
-      email: 'student@university.edu',
+    // Real Master Pricing Matrix (₹1/BW page, ₹5/Color, ₹25 assignment, ₹25 practical)
+    this.pricing = {
+      assignmentNormalPrice: 25,
+      assignmentEmergencyPrice: 40,
+      manualNormalPerPractical: 25,
+      manualEmergencyPerPage: 10,
+      manualNormalDiagram: 10,
+      manualMedicalDiagram: 50,
+      xeroxBwPerPage: 1,
+      xeroxColorPerPage: 5,
+      xeroxDeliveryFee: 20,
+      xeroxSundaySurcharge: 20,
     };
-    this.users.set(studentUserAlias.id, studentUserAlias);
-    this.users.set(studentUserAlias.email.toLowerCase(), studentUserAlias);
-
-    // Seed initial orders matching PRD specifications
-    const initialOrders: Order[] = [
-      {
-        id: 'ord-1001',
-        orderNumber: 'UNI-000124',
-        userId: studentUser.id,
-        user: studentUser,
-        customerName: 'Alex Sharma',
-        customerPhone: '+91 91234 56789',
-        hostel: 'Hostel 3 (Ganga)',
-        roomNumber: 'Room 204',
-        deliveryAddress: 'Ganga Block B, 2nd Floor, Room 204',
-        deliveryOption: 'HOSTEL',
-        agentName: 'Rajesh Kumar',
-        agentPhone: '+91 98480 12345',
-        serviceType: 'XEROX',
-        status: 'OUT_FOR_DELIVERY',
-        paymentStatus: 'PAID',
-        totalAmount: 50, // 30 BW pages (₹30) + ₹20 delivery
-        xeroxConfig: {
-          copies: 1,
-          totalPages: 30,
-          colorMode: 'BW',
-          printSides: 'DOUBLE',
-          paperSize: 'A4',
-          bindingType: 'STAPLE',
-          deliveryOption: 'HOSTEL',
-          isSunday: false,
-          instructions: 'Please staple on top-left neatly.',
-        },
-        files: [
-          {
-            id: 'file-101',
-            fileName: 'Cloud_Computing_Unit_1_2.pdf',
-            fileUrl: '/uploads/sample.pdf',
-            fileSize: 2450000,
-            fileType: 'application/pdf',
-            pageCount: 30,
-            uploadedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-          },
-        ],
-        notes: 'Hand over to roommate if unavailable',
-        pickupTime: 'Delivery within 2 hours',
-        createdAt: new Date(Date.now() - 3600000 * 6).toISOString(),
-        updatedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-      },
-      {
-        id: 'ord-1002',
-        orderNumber: 'UNI-000118',
-        userId: studentUser.id,
-        user: studentUser,
-        customerName: 'Alex Sharma',
-        customerPhone: '+91 91234 56789',
-        hostel: 'Hostel 3 (Ganga)',
-        roomNumber: 'Room 204',
-        deliveryAddress: 'Ganga Block B, Room 204',
-        deliveryOption: 'HOSTEL',
-        agentName: 'Sunil Varma',
-        agentPhone: '+91 94401 23456',
-        serviceType: 'ASSIGNMENT',
-        status: 'PROCESSING',
-        paymentStatus: 'PAID',
-        totalAmount: 40, // 1 emergency assignment = ₹40 (free hostel delivery)
-        assignmentConfig: {
-          orderType: 'EMERGENCY',
-          quantity: 1,
-          subject: 'Artificial Intelligence',
-          topic: 'Neural Networks & Deep Learning',
-          deadline: 'Tomorrow 10:00 AM',
-          pageCount: 12,
-          format: 'PRINT',
-          bindingType: 'STAPLE',
-          instructions: 'Emergency submission needed before 10 AM.',
-        },
-        files: [
-          {
-            id: 'file-102',
-            fileName: 'AI_Assignment_Alex_21CS108.pdf',
-            fileUrl: '/uploads/sample.pdf',
-            fileSize: 1800000,
-            fileType: 'application/pdf',
-            pageCount: 12,
-            uploadedAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-          },
-        ],
-        createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-        updatedAt: new Date(Date.now() - 3600000 * 1).toISOString(),
-      },
-      {
-        id: 'ord-1003',
-        orderNumber: 'UNI-000105',
-        userId: studentUser.id,
-        user: studentUser,
-        customerName: 'Alex Sharma',
-        customerPhone: '+91 91234 56789',
-        hostel: 'Hostel 3 (Ganga)',
-        roomNumber: 'Room 204',
-        deliveryAddress: 'Ganga Block B, Room 204',
-        deliveryOption: 'HOSTEL',
-        agentName: 'Rajesh Kumar',
-        agentPhone: '+91 98480 12345',
-        serviceType: 'MANUAL',
-        status: 'ORDER_ACCEPTED',
-        paymentStatus: 'PENDING',
-        totalAmount: 185, // 5 practicals (₹125) + 3 normal diagrams (₹30) + 0 delivery = ₹155 (or with 1 medical diagram +₹50)
-        manualConfig: {
-          orderType: 'NORMAL',
-          practicalsCount: 5,
-          normalDiagramsCount: 1,
-          medicalDiagramsCount: 1,
-          subject: 'Web Technologies & Cloud Lab',
-          department: 'Computer Science',
-          semester: '6th Semester',
-          labName: 'Lab 4 - Full Stack',
-          diagramColor: true,
-          bindingType: 'RECORD_BOOK',
-          instructions: 'Include title page and department index cleanly.',
-        },
-        files: [
-          {
-            id: 'file-103',
-            fileName: 'WT_Lab_Manual_Final.pdf',
-            fileUrl: '/uploads/sample.pdf',
-            fileSize: 4200000,
-            fileType: 'application/pdf',
-            pageCount: 28,
-            uploadedAt: new Date(Date.now() - 1800000).toISOString(),
-          },
-        ],
-        createdAt: new Date(Date.now() - 1800000).toISOString(),
-        updatedAt: new Date(Date.now() - 1800000).toISOString(),
-      },
-    ];
-
-    for (const order of initialOrders) {
-      this.orders.set(order.id, order);
-    }
-
-    // Seed chat messages
-    const sampleMsgs: ChatMessage[] = [
-      {
-        id: 'msg-1',
-        orderId: 'ord-1001',
-        senderId: studentUser.id,
-        senderRole: 'STUDENT',
-        senderName: studentUser.name,
-        content: 'Hi! Could you please ensure the spiral rings are black color?',
-        createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-        isRead: true,
-      },
-      {
-        id: 'msg-2',
-        orderId: 'ord-1001',
-        senderId: adminUser.id,
-        senderRole: 'ADMIN',
-        senderName: 'Campus Xerox Admin',
-        content: 'Sure Alex! We used black spiral rings. Your order is printed and ready at Counter 1.',
-        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        isRead: true,
-      },
-    ];
-    this.messages.set('ord-1001', sampleMsgs);
   }
 }
 

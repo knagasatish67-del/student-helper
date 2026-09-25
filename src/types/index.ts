@@ -1,4 +1,5 @@
-export type Role = 'STUDENT' | 'ADMIN';
+export type Role = 'STUDENT' | 'STAFF' | 'ADMIN';
+export type StaffRole = 'OPERATOR' | 'DELIVERY' | 'COORDINATOR' | 'MANAGER';
 
 export type ServiceType = 'XEROX' | 'ASSIGNMENT' | 'MANUAL';
 
@@ -24,6 +25,9 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  staffRole?: StaffRole;
+  assignedServices?: ServiceType[];
+  isActive?: boolean;
   phone?: string;
   college?: string;
   rollNumber?: string;

@@ -7,7 +7,6 @@ import { OrderTable } from '@/components/admin/ordertable';
 import { Order, AdminStats, OrderStatus } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
-  Package,
   Clock,
   CheckCircle2,
   DollarSign,

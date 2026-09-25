@@ -1,15 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   serverExternalPackages: ["bcryptjs", "jsonwebtoken", "multer"],
-  allowedDevOrigins: [
-    "*.run.app",
-    "ais-dev-clvpp2dd66gi3wb6mw4abz-143540535557.asia-east1.run.app",
-    "ais-pre-clvpp2dd66gi3wb6mw4abz-143540535557.asia-east1.run.app",
-    "localhost:3000",
-    "127.0.0.1:3000",
-  ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
   async redirects() {
     return [
       {

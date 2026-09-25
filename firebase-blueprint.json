@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Student, staff, or admin user profile record in StudentHelper platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID matching Firebase Auth UID or system ID" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["STUDENT", "STAFF", "ADMIN"] },
+        "staffRole": { "type": "string", "enum": ["OPERATOR", "DELIVERY", "COORDINATOR", "MANAGER"] },
+        "phone": { "type": "string", "maxLength": 20 },
+        "college": { "type": "string", "maxLength": 150 },
+        "rollNumber": { "type": "string", "maxLength": 50 },
+        "department": { "type": "string", "maxLength": 100 },
+        "semester": { "type": "string", "maxLength": 20 },
+        "hostel": { "type": "string", "maxLength": 100 },
+        "roomNumber": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Campus print, xerox, assignment, or lab manual order placed by student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "userId": { "type": "string" },
+        "serviceType": { "type": "string", "enum": ["XEROX", "ASSIGNMENT", "MANUAL"] },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ORDER_PLACED",
+            "ORDER_ACCEPTED",
+            "PROCESSING",
+            "READY",
+            "OUT_FOR_DELIVERY",
+            "AVAILABLE_FOR_PICKUP",
+            "COMPLETED",
+            "CANCELLED"
+          ]
+        },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID"] },
+        "totalAmount": { "type": "number" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "hostel": { "type": "string" },
+        "roomNumber": { "type": "string" },
+        "deliveryOption": { "type": "string", "enum": ["HOSTEL", "PICKUP"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "orderNumber", "userId", "serviceType", "status", "paymentStatus", "totalAmount", "customerName", "deliveryOption", "createdAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "System administrator verified identity record for role authorization",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Pricing": {
+      "title": "Pricing",
+      "description": "Configurable pricing matrix for xerox, emergency assignments, and practical manuals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "assignmentNormalPrice": { "type": "number" },
+        "assignmentEmergencyPrice": { "type": "number" },
+        "manualNormalPerPractical": { "type": "number" },
+        "manualEmergencyPerPage": { "type": "number" },
+        "manualNormalDiagram": { "type": "number" },
+        "manualMedicalDiagram": { "type": "number" },
+        "xeroxBwPerPage": { "type": "number" },
+        "xeroxColorPerPage": { "type": "number" },
+        "xeroxDeliveryFee": { "type": "number" },
+        "xeroxSundaySurcharge": { "type": "number" }
+      },
+      "required": ["id", "xeroxBwPerPage", "xeroxColorPerPage"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Order inquiry and support message exchange",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderRole": { "type": "string", "enum": ["STUDENT", "STAFF", "ADMIN"] },
+        "senderName": { "type": "string" },
+        "content": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "orderId", "senderId", "senderRole", "senderName", "content", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile document containing student or staff account details"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Orders collection containing student orders for Xerox, Assignments, and Manuals"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Admin identity whitelist for zero-trust authorization"
+    },
+    "/pricing/{pricingId}": {
+      "schema": { "$ref": "#/entities/Pricing" },
+      "description": "Global pricing configuration accessible to all users for cost calculation"
+    },
+    "/chats/{chatId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Order-related support communications between students and campus operators"
+    }
+  }
+}

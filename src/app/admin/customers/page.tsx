@@ -95,7 +95,8 @@ export default function AdminCustomersPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <Users className="h-6 w-6 text-indigo-600" />
             Enrolled Students Directory
           </h2>
           <p className="text-xs text-zinc-500 mt-1">

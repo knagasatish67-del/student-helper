@@ -1,0 +1,130 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Deny All by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    function isOwner() {
+      return isSignedIn() && (
+        request.auth.token.email in ['knagasatish@gmail.com', 'knagasatish67@gmail.com']
+      );
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isOwner() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isStaff() {
+      return isSignedIn() && (
+        isAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['STAFF', 'ADMIN'])
+      );
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'name', 'email', 'role', 'createdAt']) &&
+        data.id is string && data.id.size() <= 128 &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+        data.email is string && data.email.size() <= 150 &&
+        data.role in ['STUDENT', 'STAFF', 'ADMIN'] &&
+        data.createdAt is string;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['id', 'orderNumber', 'userId', 'serviceType', 'status', 'paymentStatus', 'totalAmount', 'customerName', 'deliveryOption', 'createdAt']) &&
+        data.id is string && data.id.size() <= 128 &&
+        data.orderNumber is string && data.orderNumber.size() <= 64 &&
+        data.userId is string && data.userId.size() <= 128 &&
+        data.serviceType in ['XEROX', 'ASSIGNMENT', 'MANUAL'] &&
+        data.status in ['ORDER_PLACED', 'ORDER_ACCEPTED', 'PROCESSING', 'READY', 'OUT_FOR_DELIVERY', 'AVAILABLE_FOR_PICKUP', 'COMPLETED', 'CANCELLED'] &&
+        data.paymentStatus in ['PENDING', 'PAID'] &&
+        data.totalAmount is number && data.totalAmount >= 0 &&
+        data.customerName is string && data.customerName.size() <= 120 &&
+        data.deliveryOption in ['HOSTEL', 'PICKUP'] &&
+        data.createdAt is string;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isStaff());
+      allow list: if isStaff();
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId &&
+        isValidUser(incoming()) &&
+        incoming().id == userId &&
+        (incoming().role in ['STUDENT', 'ADMIN'] || isOwner() || isAdmin());
+      allow update: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (
+        request.auth.uid == userId ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Admins Collection (Admin identity whitelist)
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (
+        isOwner() ||
+        request.auth.uid == adminId ||
+        isAdmin()
+      );
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow get: if isSignedIn() && isValidId(orderId) && (
+        existing().userId == request.auth.uid || isStaff()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isStaff()
+      );
+      allow create: if isSignedIn() && isValidId(orderId) &&
+        isValidOrder(incoming()) &&
+        incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(orderId) && (
+        isStaff() ||
+        (existing().userId == request.auth.uid &&
+         !(existing().status in ['COMPLETED', 'CANCELLED']) &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['notes', 'updatedAt', 'customerPhone', 'hostel', 'roomNumber']))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Pricing Matrix
+    match /pricing/{pricingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Chat / Messages
+    match /chats/{chatId} {
+      allow read: if isSignedIn() && isValidId(chatId);
+      allow create: if isSignedIn() && isValidId(chatId) &&
+        incoming().senderId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

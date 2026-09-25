@@ -6,7 +6,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'student-helper-dev-secret-key-1234
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: 'STUDENT' | 'ADMIN';
+  role: 'STUDENT' | 'STAFF' | 'ADMIN';
+  staffRole?: string;
   name: string;
 }
 
